@@ -88,7 +88,7 @@ function loadImage(src: string): void {
     resetView()
     layoutStage()
     fitCanvasToStage()
-    el.status.textContent = '指でなぞって隠す'
+    el.status.textContent = '' // 常設の指示は出さない（静かに保つ）。通知は一時的なものだけ
     syncButtons()
   }
   img.onerror = () => {
@@ -210,14 +210,17 @@ function render(): void {
    上端: ヘッダー分の余白を確保し画像が潜らないようにする。
    下端: ドックは画像の上に浮く（重なってよい）。 */
 const headerEl = document.querySelector('header') as HTMLElement
+// 「閉じた（スリムな）ドック高」を基準に領域を確保し、画像をなるべく大きく取る。
+// スライダーを開いた時は下から画像に重なる（領域は変えない＝開閉で画像が動かない）。
+let dockBaseH = 0
 function layoutStage(): void {
-  // ヘッダーの実高ぶんステージ上部を空け、初期表示でも画像がヘッダーに被らないように
+  // 上はヘッダー、下は「閉じた状態のドック」ぶんを空ける。
+  // 初期の選択枠も読込後の画像も同じ「ヘッダー下〜スリムなドック上」に収まり、
+  // ドックを開閉しても領域（＝画像の位置・サイズ）は変わらない。
   el.stage.style.paddingTop = `${headerEl.getBoundingClientRect().height}px`
-  // 空状態（画像選択枠）はドックに被らないよう、下にドック分の余白を確保する。
-  // 画像読込後は '' に戻し、CSS の小さい padding（ドックは画像に重なってよい）に任せる。
-  el.stage.style.paddingBottom = el.frame.classList.contains('empty')
-    ? `${el.dock.getBoundingClientRect().height + 24}px`
-    : ''
+  if (!el.dock.classList.contains('open')) dockBaseH = el.dock.getBoundingClientRect().height
+  const reserve = (dockBaseH || el.dock.getBoundingClientRect().height) + 12
+  el.stage.style.paddingBottom = `${reserve}px`
 }
 // 画像を収めたい表示領域（画面座標）= ステージの content box（padding を除いた内側）
 function contentBox(): Box {
@@ -516,6 +519,7 @@ el.save.addEventListener('click', save)
    その1タップは描画に使わない（次のタップから塗れる）。 */
 const dockToggle = byId('dockToggle')
 function setDockOpen(open: boolean): void {
+  // 領域は「開いた状態のドック高」で固定しているので、開閉では画像を動かさない（再フィットしない）
   el.dock.classList.toggle('open', open)
   dockToggle.setAttribute('aria-expanded', String(open))
 }
@@ -556,4 +560,3 @@ function syncButtons(): void {
 /* ---------- 起動 ---------- */
 el.blurRow.classList.remove('off')
 el.texRow.classList.remove('off')
-el.status.textContent = '画像を選ぶ'

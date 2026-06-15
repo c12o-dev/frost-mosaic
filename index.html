@@ -14,8 +14,8 @@
     <div class="frame empty" id="frame">
       <canvas id="cv"></canvas>
       <div class="hint" id="hint">
-        <div class="big">指でなぞって隠す</div>
-        <div>下のボタンから画像を選択</div>
+        <div class="big">タップして画像を選択</div>
+        <div>なぞった場所を氷霜ガラスで隠します</div>
       </div>
     </div>
   </div>
@@ -23,15 +23,15 @@
   <header>
     <h1>Frost<span> / 氷霜ガラス</span></h1>
     <div class="head-right">
-      <span class="status" id="status">画像を選ぶ</span>
+      <span class="status" id="status"></span>
       <button class="info-btn" id="info" type="button" aria-label="このアプリについて">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><circle cx="12" cy="7.5" r="0.6" fill="currentColor"/></svg>
       </button>
     </div>
   </header>
 
-  <div class="dock open" id="dock">
-    <button class="dock-handle" id="dockToggle" type="button" aria-label="調整パネルの開閉" aria-expanded="true">
+  <div class="dock" id="dock">
+    <button class="dock-handle" id="dockToggle" type="button" aria-label="調整パネルの開閉" aria-expanded="false">
       <span class="grip"></span>
     </button>
     <div class="seg" id="modeSeg">
