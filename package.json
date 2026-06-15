@@ -1,0 +1,24 @@
+{
+  "name": "frost-mosaic",
+  "version": "0.1.0",
+  "description": "指でなぞって画像をモザイク/氷霜ガラスで隠す、端末内完結の PWA",
+  "type": "module",
+  "license": "MIT",
+  "author": "Seu (https://c12o.net)",
+  "homepage": "https://frost.c12o.net",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "happy-dom": "^16.0.0",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.0",
+    "vite-plugin-pwa": "^0.21.0",
+    "vitest": "^3.0.0"
+  }
+}
