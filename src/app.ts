@@ -4,6 +4,7 @@ import { fitScale, toCanvasPoint, toCanvasBrush, coverFit, containFit } from './
 import { mosaicDims, type Mode } from './lib/mosaic'
 import { reduceStrokes, stampPositions, hasStrokes, type Stroke } from './lib/strokes'
 import { frostParams, type FrostParams } from './lib/frost'
+import { pinch, clampView, type Pair, type Vec, type Box } from './lib/viewport'
 import { pickSaveStrategy, outputFileName } from './lib/save'
 import { controlState, modeGating } from './lib/uiState'
 import { detectSaveCaps } from './env'
@@ -24,6 +25,9 @@ const mctx = mask.getContext('2d')!
 const tctx = tmp.getContext('2d')!
 
 const MAX = 1400
+const MIN_SCALE = 1
+const MAX_SCALE = 8
+const view = { scale: 1, tx: 0, ty: 0 } // キャンバスの表示変換（ピンチズーム/パン）
 let strokes: Stroke[] = []
 let activeW = 0
 let lastPt: { x: number; y: number } | null = null
@@ -48,6 +52,7 @@ const el = {
   status: byId('status'),
   frame: byId('frame'),
   stage: byId('stage'),
+  dock: byId('dock'),
   undo: byId<HTMLButtonElement>('undo'),
   reset: byId<HTMLButtonElement>('reset'),
   save: byId<HTMLButtonElement>('save'),
@@ -80,6 +85,8 @@ function loadImage(src: string): void {
     ready = true
     el.hint.style.display = 'none'
     el.frame.classList.remove('empty')
+    resetView()
+    layoutStage()
     fitCanvasToStage()
     el.status.textContent = '指でなぞって隠す'
     syncButtons()
@@ -199,7 +206,34 @@ function render(): void {
   ctx.drawImage(tmp, 0, 0)
 }
 
-/* ---------- 表示サイズ（画像アスペクト比のまま全体表示・トリミングなし） ---------- */
+/* ---------- 表示サイズ（画像アスペクト比のまま全体表示・トリミングなし） ----------
+   上端: ヘッダー分の余白を確保し画像が潜らないようにする。
+   下端: ドックは画像の上に浮く（重なってよい）。 */
+const headerEl = document.querySelector('header') as HTMLElement
+function layoutStage(): void {
+  // ヘッダーの実高ぶんステージ上部を空け、初期表示でも画像がヘッダーに被らないように
+  el.stage.style.paddingTop = `${headerEl.getBoundingClientRect().height}px`
+  // 空状態（画像選択枠）はドックに被らないよう、下にドック分の余白を確保する。
+  // 画像読込後は '' に戻し、CSS の小さい padding（ドックは画像に重なってよい）に任せる。
+  el.stage.style.paddingBottom = el.frame.classList.contains('empty')
+    ? `${el.dock.getBoundingClientRect().height + 24}px`
+    : ''
+}
+// 画像を収めたい表示領域（画面座標）= ステージの content box（padding を除いた内側）
+function contentBox(): Box {
+  const sr = el.stage.getBoundingClientRect()
+  const cs = getComputedStyle(el.stage)
+  return {
+    left: sr.left + parseFloat(cs.paddingLeft),
+    top: sr.top + parseFloat(cs.paddingTop),
+    right: sr.right - parseFloat(cs.paddingRight),
+    bottom: sr.bottom - parseFloat(cs.paddingBottom),
+  }
+}
+// transform 前のキャンバス表示サイズ（CSS px）
+function baseSize(): { w: number; h: number } {
+  return { w: parseFloat(cv.style.width) || 0, h: parseFloat(cv.style.height) || 0 }
+}
 function fitCanvasToStage(): void {
   if (!cv.width || !cv.height) return
   const cs = getComputedStyle(el.stage)
@@ -212,10 +246,24 @@ function fitCanvasToStage(): void {
   cv.style.width = `${w}px`
   cv.style.height = `${h}px`
 }
-// ステージのサイズ変化（回転・コントロール再配置・ウィンドウリサイズ）に追従
+function applyView(): void {
+  cv.style.transform = `translate(${view.tx}px, ${view.ty}px) scale(${view.scale})`
+}
+function resetView(): void {
+  view.scale = 1
+  view.tx = 0
+  view.ty = 0
+  applyView()
+}
+// ステージのサイズ変化（回転・ウィンドウリサイズ・safe-area 変化）に追従
 new ResizeObserver(() => {
-  if (ready) fitCanvasToStage()
+  if (ready) {
+    resetView() // レイアウトが変わったらズームは等倍に戻す
+    layoutStage()
+    fitCanvasToStage()
+  }
 }).observe(el.stage)
+layoutStage() // 空状態でもヘッダー分の余白を確保
 
 /* ---------- マスク（ソフト円） ---------- */
 function softCore(c: CanvasRenderingContext2D, x: number, y: number, r: number): void {
@@ -240,7 +288,8 @@ function rebuildMask(): void {
 }
 
 /* ---------- 入力 ---------- */
-function pos(e: PointerEvent): { x: number; y: number } {
+// getBoundingClientRect は CSS transform を反映するので、ズーム中も座標は正しくマップされる
+function pos(e: { clientX: number; clientY: number }): { x: number; y: number } {
   const r = cv.getBoundingClientRect()
   return toCanvasPoint(e.clientX, e.clientY, r, cv.width, cv.height)
 }
@@ -257,9 +306,8 @@ function scheduleRender(): void {
     })
 }
 
-cv.addEventListener('pointerdown', (e) => {
-  if (!ready) return
-  cv.setPointerCapture(e.pointerId)
+/* --- 描画（1本指） --- */
+function startStroke(e: PointerEvent): void {
   const p = pos(e)
   activeW = brushW()
   strokes = reduceStrokes(strokes, { type: 'start', point: p, w: activeW })
@@ -267,24 +315,97 @@ cv.addEventListener('pointerdown', (e) => {
   drawing = true
   softCore(mctx, p.x, p.y, activeW / 2)
   scheduleRender()
-})
-cv.addEventListener('pointermove', (e) => {
-  if (!drawing || !lastPt) return
+}
+function extendStroke(e: PointerEvent): void {
+  if (!lastPt) return
   const p = pos(e)
   strokes = reduceStrokes(strokes, { type: 'extend', point: p })
   const r = activeW / 2
   for (const s of stampPositions([lastPt, p], r)) softCore(mctx, s.x, s.y, r)
   lastPt = p
   scheduleRender()
-})
+}
 function endStroke(): void {
   if (!drawing) return
   drawing = false
   lastPt = null
   syncButtons()
 }
-cv.addEventListener('pointerup', endStroke)
-cv.addEventListener('pointercancel', endStroke)
+// 2本指目が触れたら、開始済みストロークは取り消してジェスチャに切り替える
+function discardStroke(): void {
+  if (!drawing) return
+  strokes = reduceStrokes(strokes, { type: 'undo' })
+  rebuildMask()
+  drawing = false
+  lastPt = null
+  scheduleRender()
+}
+
+/* --- ズーム/パン（2本指） --- */
+const pointers = new Map<number, Vec>()
+let gesture: { ids: number[]; prev: Pair; layoutL: number; layoutT: number } | null = null
+
+function beginGesture(): void {
+  const ids = [...pointers.keys()].slice(0, 2)
+  const a = pointers.get(ids[0])!
+  const b = pointers.get(ids[1])!
+  const r = cv.getBoundingClientRect() // 左上 = layout原点 + 現在の平行移動（origin:0 0）
+  gesture = {
+    ids,
+    prev: { a: { ...a }, b: { ...b } },
+    layoutL: r.left - view.tx,
+    layoutT: r.top - view.ty,
+  }
+}
+function updateGesture(): void {
+  if (!gesture) return
+  const a = pointers.get(gesture.ids[0])
+  const b = pointers.get(gesture.ids[1])
+  if (!a || !b) return
+  const cur: Pair = { a: { ...a }, b: { ...b } }
+  const sv = { s: view.scale, dx: gesture.layoutL + view.tx, dy: gesture.layoutT + view.ty }
+  const nv = pinch(sv, gesture.prev, cur, MIN_SCALE, MAX_SCALE)
+  // 表示領域に収める（上端がヘッダーに潜らない・縁に隙間を作らない）
+  const cl = clampView(nv, baseSize(), contentBox())
+  view.scale = cl.s
+  view.tx = cl.dx - gesture.layoutL
+  view.ty = cl.dy - gesture.layoutT
+  applyView()
+  gesture.prev = cur
+}
+
+cv.addEventListener('pointerdown', (e) => {
+  if (!ready) return
+  cv.setPointerCapture(e.pointerId)
+  pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
+  if (pointers.size === 1) {
+    startStroke(e)
+  } else if (pointers.size === 2) {
+    discardStroke() // 1本目で塗り始めていたら取り消す
+    beginGesture()
+  }
+})
+cv.addEventListener('pointermove', (e) => {
+  const p = pointers.get(e.pointerId)
+  if (!p) return
+  p.x = e.clientX
+  p.y = e.clientY
+  if (gesture) {
+    if (gesture.ids.includes(e.pointerId)) updateGesture()
+    return
+  }
+  if (drawing) extendStroke(e)
+})
+function liftPointer(e: PointerEvent): void {
+  pointers.delete(e.pointerId)
+  if (gesture) {
+    if (pointers.size < 2) gesture = null // 残った指では描かない（全て離すまで待つ）
+    return
+  }
+  endStroke()
+}
+cv.addEventListener('pointerup', liftPointer)
+cv.addEventListener('pointercancel', liftPointer)
 
 /* ---------- スライダー / モード ---------- */
 el.block.addEventListener('input', () => {
@@ -389,6 +510,28 @@ function save(): void {
   }, 'image/png')
 }
 el.save.addEventListener('click', save)
+
+/* ---------- ドック開閉 ----------
+   開いている間は画像に重なってよい。画像（ステージ）をタップすると閉じ、
+   その1タップは描画に使わない（次のタップから塗れる）。 */
+const dockToggle = byId('dockToggle')
+function setDockOpen(open: boolean): void {
+  el.dock.classList.toggle('open', open)
+  dockToggle.setAttribute('aria-expanded', String(open))
+}
+dockToggle.addEventListener('click', () => {
+  setDockOpen(!el.dock.classList.contains('open'))
+})
+// ステージ上のタップでドックを閉じ、その pointerdown は飲み込む（capture で canvas より先に処理）
+el.stage.addEventListener(
+  'pointerdown',
+  (e) => {
+    if (!el.dock.classList.contains('open')) return
+    setDockOpen(false)
+    e.stopPropagation() // canvas の pointerdown を発火させない＝この1タップは描画しない
+  },
+  true,
+)
 
 /* ---------- About モーダル ---------- */
 const aboutBackdrop = byId('aboutBackdrop')
