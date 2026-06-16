@@ -1,64 +1,101 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#070a0e">
-<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
-<meta name="description" content="Frost の使い方。画像を選び、なぞって隠す。モード・スライダー・ピンチズーム・保存の手順を紹介します。">
-<title>使い方 — Frost</title>
-<link rel="stylesheet" href="/src/site.css">
-</head>
-<body>
-<header class="site-header">
-  <a class="brand" href="./index.html"><img src="icons/icon-192.png" alt="">Frost<span>/ 氷霜ガラス</span></a>
-  <nav class="site-nav">
-    <a href="./privacy.html">プライバシー</a>
-    <a href="./faq.html">FAQ</a>
-    <a href="./app.html">アプリ</a>
-  </nav>
-</header>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#070a0e" />
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png" />
+    <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+    <meta
+      name="description"
+      content="Frost の使い方。画像を選び、なぞって隠す。モード・スライダー・ピンチズーム・保存の手順を紹介します。"
+    />
+    <title>使い方 — Frost</title>
+    <link rel="stylesheet" href="/src/site.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="./index.html"
+        ><img src="icons/icon-192.png" alt="" />Frost<span>/ 氷霜ガラス</span></a
+      >
+      <nav class="site-nav">
+        <a href="./privacy.html">プライバシー</a>
+        <a href="./faq.html">FAQ</a>
+        <a href="./app.html">アプリ</a>
+      </nav>
+    </header>
 
-<main class="wrap">
-  <div class="page-head">
-    <h1>使い方</h1>
-    <p>選ぶ → なぞる → 保存。基本はこれだけ。</p>
-  </div>
+    <main class="wrap">
+      <div class="page-head">
+        <h1>使い方</h1>
+        <p>選ぶ → なぞる → 保存。基本はこれだけ。</p>
+      </div>
 
-  <div class="note">手元に画像が無くても、<a href="./app.html?sample=1">サンプルで試す</a>からすぐに体験できます（サンプルも端末内だけで処理されます）。</div>
+      <div class="note">
+        手元に画像が無くても、<a href="./app.html?sample=1">サンプルで試す</a
+        >からすぐに体験できます（サンプルも端末内だけで処理されます）。
+      </div>
 
-  <section>
-    <ol class="steps">
-      <li><b>画像を選ぶ</b><p>枠をタップ、または下のメニューの「画像」から選択します。</p></li>
-      <li><b>モードを選ぶ</b><p>「モザイク」か「氷霜ガラス」。氷霜ガラスはモザイクにぼかしと霜の質感を重ねます。</p></li>
-      <li><b>なぞって隠す</b><p>隠したい所を指（1本）でなぞると、その部分だけ加工面が現れます。</p></li>
-      <li><b>強さを調整する</b><p>下のドックのグリップを開くと、粗さ・ぼかし・氷霜・ブラシの太さを調整できます。</p></li>
-      <li><b>拡大して細部を塗る</b><p>2本指でピンチすると拡大、2本指のドラッグで移動。長い画像の細部もきれいに隠せます。</p></li>
-      <li><b>やり直す</b><p>「取消」で直前のひと塗りを戻す、「消去」で全部リセット。</p></li>
-      <li><b>保存する</b><p>「保存」で PNG として書き出します（iOS は共有シート、それ以外は直接ダウンロード）。保存時に EXIF/GPS は除去されます。</p></li>
-    </ol>
-  </section>
+      <section>
+        <ol class="steps">
+          <li>
+            <b>画像を選ぶ</b>
+            <p>枠をタップ、または下のメニューの「画像」から選択します。</p>
+          </li>
+          <li>
+            <b>モードを選ぶ</b>
+            <p>「モザイク」か「氷霜ガラス」。氷霜ガラスはモザイクにぼかしと霜の質感を重ねます。</p>
+          </li>
+          <li>
+            <b>なぞって隠す</b>
+            <p>隠したい所を指（1本）でなぞると、その部分だけ加工面が現れます。</p>
+          </li>
+          <li>
+            <b>強さを調整する</b>
+            <p>下のドックのグリップを開くと、粗さ・ぼかし・氷霜・ブラシの太さを調整できます。</p>
+          </li>
+          <li>
+            <b>拡大して細部を塗る</b>
+            <p>
+              2本指でピンチすると拡大、2本指のドラッグで移動。長い画像の細部もきれいに隠せます。
+            </p>
+          </li>
+          <li>
+            <b>やり直す</b>
+            <p>「取消」で直前のひと塗りを戻す、「消去」で全部リセット。</p>
+          </li>
+          <li>
+            <b>保存する</b>
+            <p>
+              「保存」で PNG として書き出します（iOS
+              は共有シート、それ以外は直接ダウンロード）。保存時に EXIF/GPS は除去されます。
+            </p>
+          </li>
+        </ol>
+      </section>
 
-  <section>
-    <h3>うまく隠すコツ</h3>
-    <p class="muted">名前や番号など重要な情報は、粗さ・ぼかし・氷霜を強めにすると復元が難しくなります。氷霜を 0% にすると、霜の質感を消してモザイク＋ぼかしだけにできます。</p>
-  </section>
+      <section>
+        <h3>うまく隠すコツ</h3>
+        <p class="muted">
+          名前や番号など重要な情報は、粗さ・ぼかし・氷霜を強めにすると復元が難しくなります。氷霜を
+          0% にすると、霜の質感を消してモザイク＋ぼかしだけにできます。
+        </p>
+      </section>
 
-  <p class="back"><a href="./app.html">← アプリを開く</a></p>
-</main>
+      <p class="back"><a href="./app.html">← アプリを開く</a></p>
+    </main>
 
-<footer class="site-footer">
-  <div class="wrap">
-    <nav>
-      <a href="./app.html">アプリ</a>
-      <a href="./howto.html">使い方</a>
-      <a href="./privacy.html">プライバシー</a>
-      <a href="./faq.html">FAQ</a>
-      <a href="https://github.com/c12o-dev/frost-mosaic">GitHub</a>
-    </nav>
-    <span class="copy">© 2026 Seu (c12o) · MIT</span>
-  </div>
-</footer>
-</body>
+    <footer class="site-footer">
+      <div class="wrap">
+        <nav>
+          <a href="./app.html">アプリ</a>
+          <a href="./howto.html">使い方</a>
+          <a href="./privacy.html">プライバシー</a>
+          <a href="./faq.html">FAQ</a>
+          <a href="https://github.com/c12o-dev/frost-mosaic">GitHub</a>
+        </nav>
+        <span class="copy">© 2026 Seu (c12o) · MIT</span>
+      </div>
+    </footer>
+  </body>
 </html>
