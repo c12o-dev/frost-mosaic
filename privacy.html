@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#070a0e">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="description" content="Frost のプライバシー方針。画像は外部に送らず端末内で処理。保存時に EXIF/GPS を除去。仕組みと確認方法を説明します。">
+<title>プライバシー — Frost</title>
+<link rel="stylesheet" href="/src/site.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="brand" href="./index.html"><img src="icons/icon-192.png" alt="">Frost<span>/ 氷霜ガラス</span></a>
+  <nav class="site-nav">
+    <a href="./howto.html">使い方</a>
+    <a href="./faq.html">FAQ</a>
+    <a href="./app.html">アプリ</a>
+  </nav>
+</header>
+
+<main class="wrap">
+  <div class="page-head">
+    <h1>プライバシー</h1>
+    <p>なぜ安全か——主張ではなく、仕組みで。</p>
+  </div>
+
+  <div class="note">Frost は画像をどこにも送りません。隠す処理も保存も、すべてあなたの端末（ブラウザ）の中だけで行われます。</div>
+
+  <section>
+    <h3>画像は外部に出ない</h3>
+    <p class="muted">選んだ画像はネットワークに送信されません。読み込みも加工も、ブラウザ内の Canvas 上で完結します。サーバーに保管されることも、第三者に共有されることもありません。</p>
+
+    <h3>EXIF / GPS は自動で除去</h3>
+    <p class="muted">保存時に画像を PNG として再エンコードします。この過程で、元画像に含まれていた撮影日時・位置情報（GPS）などのメタデータ（EXIF）は失われます。隠した見た目だけでなく、埋め込み情報も残しません。</p>
+
+    <h3>キャッシュするのはアプリ本体だけ</h3>
+    <p class="muted">オフライン動作のために Service Worker がキャッシュするのは、アプリの画面・コード（アプリシェル）だけです。<b>あなたの画像はキャッシュしません</b>。</p>
+
+    <h3>余計なものを積まない</h3>
+    <p class="muted">実行時に読み込む外部ライブラリはゼロ。広告・トラッキング・解析タグも入れていません。ソースコードは公開されています（<a href="https://github.com/c12o-dev/frost-mosaic">GitHub</a>・MIT ライセンス）。</p>
+
+    <h3>自分で確かめられる</h3>
+    <p class="muted">ブラウザの開発者ツールの「ネットワーク」を開いた状態で画像を選び、加工・保存しても、画像の送信通信が発生しないことを確認できます。一度開けば、オフライン（機内モード）でも動作します。</p>
+  </section>
+
+  <p class="back"><a href="./app.html">← アプリに戻る</a></p>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <nav>
+      <a href="./app.html">アプリ</a>
+      <a href="./howto.html">使い方</a>
+      <a href="./privacy.html">プライバシー</a>
+      <a href="./faq.html">FAQ</a>
+      <a href="https://github.com/c12o-dev/frost-mosaic">GitHub</a>
+    </nav>
+    <span class="copy">© 2026 Seu (c12o) · MIT</span>
+  </div>
+</footer>
+</body>
+</html>

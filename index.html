@@ -2,102 +2,71 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#070a0e">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/png" sizes="48x48" href="favicon-48.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<title>Frost — 氷霜ガラス・モザイク</title>
+<meta name="description" content="指でなぞった場所を氷霜ガラス／モザイクで隠す PWA。画像は外部に送られず、すべて端末内で処理。保存時に EXIF/GPS も除去。">
+<title>Frost — 指でなぞって隠す、端末内完結の画像モザイク</title>
+<link rel="stylesheet" href="/src/site.css">
 </head>
 <body>
-<div class="app" id="app">
-  <div class="stage" id="stage">
-    <div class="frame empty" id="frame">
-      <canvas id="cv"></canvas>
-      <div class="hint" id="hint">
-        <div class="big">タップして画像を選択</div>
-        <div>なぞった場所を氷霜ガラスで隠します</div>
+<header class="site-header">
+  <a class="brand" href="./index.html"><img src="icons/icon-192.png" alt="">Frost<span>/ 氷霜ガラス</span></a>
+  <nav class="site-nav">
+    <a href="./howto.html">使い方</a>
+    <a href="./privacy.html">プライバシー</a>
+    <a href="./faq.html">FAQ</a>
+  </nav>
+</header>
+
+<main>
+  <section class="hero">
+    <img class="mark" src="icons/icon-512.png" alt="Frost のアイコン（氷の結晶）">
+    <h1>指でなぞった場所を、<br><span class="acc">氷霜</span>で覆って隠す。</h1>
+    <p class="lead">顔・住所・画面内の番号——隠したい所をなぞるだけ。画像は<b>外部に送られず</b>、すべてこの端末の中だけで処理されます。</p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="./app.html">使ってみる</a>
+      <a class="btn btn-ghost" href="./app.html?sample=1">サンプルで試す</a>
+    </div>
+  </section>
+
+  <section class="wrap">
+    <div class="cards">
+      <div class="card">
+        <h3>端末内で完結</h3>
+        <p>処理はすべてブラウザの中。サーバーへのアップロードは一切ありません。</p>
+      </div>
+      <div class="card">
+        <h3>EXIF / GPS を除去</h3>
+        <p>保存時に再エンコードするため、元画像の位置情報・撮影メタデータも落ちます。</p>
+      </div>
+      <div class="card">
+        <h3>インストール不要・オフライン</h3>
+        <p>ブラウザですぐ使え、ホーム画面に追加すればアプリのようにオフラインでも動きます。</p>
       </div>
     </div>
+  </section>
+
+  <section class="wrap">
+    <h2>黒塗りではなく、氷霜で。</h2>
+    <p class="muted">無機質な黒塗りやモザイクの代わりに、冬の窓に降りる霜の質感で覆います。なぞった場所が凍りついて見えなくなる——隠すことを、ひと撫でで生まれる景色にしました。モザイク単体のモードも選べます。</p>
+    <p><a href="./howto.html">使い方を見る →</a></p>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <nav>
+      <a href="./app.html">アプリ</a>
+      <a href="./howto.html">使い方</a>
+      <a href="./privacy.html">プライバシー</a>
+      <a href="./faq.html">FAQ</a>
+      <a href="https://github.com/c12o-dev/frost-mosaic">GitHub</a>
+    </nav>
+    <span class="copy">© 2026 Seu (c12o) · MIT</span>
   </div>
-
-  <header>
-    <h1>Frost<span> / 氷霜ガラス</span></h1>
-    <div class="head-right">
-      <span class="status" id="status"></span>
-      <button class="info-btn" id="info" type="button" aria-label="このアプリについて">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><circle cx="12" cy="7.5" r="0.6" fill="currentColor"/></svg>
-      </button>
-    </div>
-  </header>
-
-  <div class="dock" id="dock">
-    <button class="dock-handle" id="dockToggle" type="button" aria-label="調整パネルの開閉" aria-expanded="false">
-      <span class="grip"></span>
-    </button>
-    <div class="seg" id="modeSeg">
-      <button data-mode="mosaic" type="button">モザイク</button>
-      <button data-mode="frost" class="on" type="button">氷霜ガラス</button>
-    </div>
-
-    <div class="sliders">
-      <div class="slider">
-        <div class="lab"><span>粗さ</span><b class="mono" id="blockVal">16 px</b></div>
-        <input type="range" id="block" min="6" max="48" value="16" aria-label="モザイクの粗さ">
-      </div>
-      <div class="slider" id="blurRow">
-        <div class="lab"><span>ぼかし</span><b class="mono" id="blurVal">5 px</b></div>
-        <input type="range" id="blur" min="0" max="14" value="5" aria-label="ぼかしの強さ">
-      </div>
-      <div class="slider" id="texRow">
-        <div class="lab"><span>氷霜</span><b class="mono" id="texVal">60 %</b></div>
-        <input type="range" id="tex" min="0" max="100" value="60" aria-label="氷霜の強さ">
-      </div>
-      <div class="slider">
-        <div class="lab"><span>ブラシ</span><b class="mono" id="brushVal">36 px</b></div>
-        <input type="range" id="brush" min="10" max="90" value="36" aria-label="ブラシの太さ">
-      </div>
-    </div>
-
-    <div class="nav-inner">
-      <button id="pick" type="button">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="10" r="1.5"/><path d="M21 16l-5-5L5 19"/></svg>
-        画像
-      </button>
-      <button id="undo" type="button" disabled>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M9 14L4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/></svg>
-        取消
-      </button>
-      <button id="reset" type="button" disabled>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M6 6l1 14h10l1-14"/></svg>
-        消去
-      </button>
-      <button id="save" class="cta" type="button" disabled>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 4v11"/><path d="M8 11l4 4 4-4"/><path d="M5 19h14"/></svg>
-        保存
-      </button>
-    </div>
-  </div>
-</div>
-
-<input type="file" id="file" accept="image/*">
-
-<div class="sheet-backdrop" id="aboutBackdrop" hidden>
-  <div class="sheet" id="about" role="dialog" aria-modal="true" aria-labelledby="aboutTitle">
-    <div class="sheet-head">
-      <h2 id="aboutTitle">Frost について</h2>
-      <button class="sheet-close" id="aboutClose" type="button" aria-label="閉じる">✕</button>
-    </div>
-    <div class="sheet-body">
-      <p><b>使い方</b>：画像を選び、隠したい所を指でなぞるだけ。モザイク／氷霜ガラスの2モードと、粗さ・ぼかし・氷霜・ブラシの4スライダーで調整できます。</p>
-      <p><b>プライバシー</b>：画像の処理は<b>すべてこの端末内で完結</b>します。サーバーへの送信は一切ありません。保存時に再エンコードされるため、元画像の EXIF / GPS 情報も除去されます。</p>
-      <p><b>ライセンス</b>：MIT。霜のテクスチャは AI 生成画像（ChatGPT）です。</p>
-    </div>
-  </div>
-</div>
-
-<script type="module" src="/src/app.ts"></script>
+</footer>
 </body>
 </html>

@@ -1,5 +1,6 @@
 import './styles.css'
 import frostLayerUrl from '../assets/frost_layer.webp'
+import sampleUrl from '../assets/sample.svg'
 import { fitScale, toCanvasPoint, toCanvasBrush, coverFit, containFit } from './lib/geometry'
 import { mosaicDims, type Mode } from './lib/mosaic'
 import { reduceStrokes, stampPositions, hasStrokes, type Stroke } from './lib/strokes'
@@ -560,3 +561,9 @@ function syncButtons(): void {
 /* ---------- 起動 ---------- */
 el.blurRow.classList.remove('off')
 el.texRow.classList.remove('off')
+
+// LP の「サンプルで試す」(?sample) から来たら、同梱サンプルを端末内処理で読み込む
+if (new URLSearchParams(location.search).has('sample')) {
+  originalName = 'sample'
+  loadImage(sampleUrl)
+}

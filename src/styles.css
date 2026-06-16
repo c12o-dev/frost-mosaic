@@ -209,3 +209,6 @@ input[type=file]{display:none;}
 .sheet-body{font-size:13px; line-height:1.7; color:var(--text);}
 .sheet-body p{margin:0 0 12px;}
 .sheet-body b{color:var(--accent); font-weight:600;}
+.sheet-links{display:flex; flex-wrap:wrap; gap:14px; margin-top:4px; padding-top:12px; border-top:1px solid var(--line);}
+.sheet-links a{color:var(--accent); text-decoration:none; font-size:13px;}
+.sheet-links a:active{opacity:.7;}
