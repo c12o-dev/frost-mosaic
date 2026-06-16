@@ -116,7 +116,12 @@ function noiseTile(): HTMLCanvasElement {
   return n
 }
 
-function applyFrostTexture(c: CanvasRenderingContext2D, w: number, h: number, f: FrostParams): void {
+function applyFrostTexture(
+  c: CanvasRenderingContext2D,
+  w: number,
+  h: number,
+  f: FrostParams,
+): void {
   // 1) 寒色白の散乱
   c.globalCompositeOperation = 'soft-light'
   c.fillStyle = `rgba(214,233,243,${f.scatter})`
@@ -282,7 +287,11 @@ function softCore(c: CanvasRenderingContext2D, x: number, y: number, r: number):
   c.fill()
   c.globalCompositeOperation = 'source-over'
 }
-function stampStroke(c: CanvasRenderingContext2D, pts: { x: number; y: number }[], w: number): void {
+function stampStroke(
+  c: CanvasRenderingContext2D,
+  pts: { x: number; y: number }[],
+  w: number,
+): void {
   const r = w / 2
   for (const p of stampPositions(pts, r)) softCore(c, p.x, p.y, r)
 }

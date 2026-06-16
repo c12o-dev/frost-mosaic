@@ -39,7 +39,10 @@ describe('detectSaveCaps', () => {
   })
 
   it('iPhone の UA を isIOS として検出', () => {
-    setNav('userAgent', 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15')
+    setNav(
+      'userAgent',
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15',
+    )
     expect(detectSaveCaps().isIOS).toBe(true)
   })
 

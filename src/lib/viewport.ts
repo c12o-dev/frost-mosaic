@@ -28,8 +28,7 @@ export interface Pair {
 const dist = (a: Vec, b: Vec): number => Math.hypot(a.x - b.x, a.y - b.y)
 const mid = (a: Vec, b: Vec): Vec => ({ x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 })
 
-export const clamp = (v: number, lo: number, hi: number): number =>
-  Math.min(hi, Math.max(lo, v))
+export const clamp = (v: number, lo: number, hi: number): number => Math.min(hi, Math.max(lo, v))
 
 /**
  * 2本指の移動 prev→cur をビューに適用する。
