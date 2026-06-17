@@ -31,6 +31,12 @@ body {
   line-height: 1.75;
   overscroll-behavior-y: none;
   -webkit-font-smoothing: antialiased;
+  /* 日本語の改行制御（読み物・LP 共通。app は styles.css なので非対象） */
+  overflow-wrap: anywhere; /* 長い URL などのはみ出しを防ぐ */
+  line-break: strict; /* 句読点・閉じ括弧の行頭禁則 */
+  word-break: normal; /* 既定値（auto-phrase 非対応ブラウザのフォールバック） */
+  word-break: auto-phrase; /* Chromium: 文節単位で自然に折り返す。未対応は上の normal が残る */
+  text-wrap: pretty; /* 行末の 1 文字孤立・ラグドエッジを緩和。未対応は無視 */
 }
 /* 静かな冷たさ: 上方のごく薄い氷の曇りだけ（装飾は削ぐ） */
 body::before {
@@ -310,6 +316,18 @@ p {
   margin: 0 0 16px;
   font-size: 14px;
   color: var(--muted);
+}
+.faq details ul {
+  margin: 0 0 16px;
+  padding-left: 1.25em;
+  font-size: 14px;
+  color: var(--muted);
+}
+.faq details li {
+  margin-bottom: 6px;
+}
+.faq details li:last-child {
+  margin-bottom: 0;
 }
 
 /* notice / callout */
