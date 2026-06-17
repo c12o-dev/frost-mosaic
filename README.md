@@ -1,12 +1,23 @@
+<div align="center">
+
 # Frost — 氷霜ガラス・モザイク
 
-指でなぞった場所を**氷霜ガラス／モザイクで隠す** PWA。  
+**指でなぞった場所を氷霜ガラス／モザイクで隠す PWA。**  
 顔・住所・番号など、隠したい所をなぞるだけ。  
-**画像は外部に送られず、すべて端末内（ブラウザ）で処理**されます。
+画像は外部に送られず、すべて端末内（ブラウザ）で処理されます。
 
 🔗 **<https://frost.c12o.net>**
 
-ランタイム依存ライブラリはゼロ（素の TypeScript + Canvas 2D）。
+[![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white)
+![PWA](https://img.shields.io/badge/PWA-installable-5A0FC8?logo=pwa&logoColor=white)
+![runtime deps: 0](https://img.shields.io/badge/runtime%20deps-0-success)
+![processing: on-device](https://img.shields.io/badge/processing-on--device-success)
+![tests: 71](https://img.shields.io/badge/tests-71%20passing-success)
+
+<img src="docs/demo.gif" width="280" alt="なぞった所が氷霜ガラスで隠れていくデモ">
+
+</div>
 
 ## 特長
 
@@ -18,6 +29,17 @@
 - **ピンチズーム / パン** — 2 本指で拡大・移動、1 本指で描画。長い画像の細部も塗れます
 - **PWA** — インストール不要で使え、ホーム画面に追加すればオフラインでも起動
 - 取消 / 全消去、保存（iOS は共有シート、それ以外は直接ダウンロード）
+
+## 2 つのモード
+
+なぞった所だけが隠れます。モードはいつでも切り替え可能。
+
+<table>
+<tr>
+<td align="center"><img src="docs/mosaic.png" width="300" alt="モザイクモード"><br><b>モザイク</b><br>四角いブロックで潰す</td>
+<td align="center"><img src="docs/frost.png" width="300" alt="氷霜ガラスモード"><br><b>氷霜ガラス</b><br>モザイク＋ぼかし＋霜の質感</td>
+</tr>
+</table>
 
 ## プライバシー
 
@@ -47,7 +69,7 @@ pnpm build      # 型チェック + 本番ビルド（dist/）
 
 ## 構成
 
-コアロジックは `src/lib/` に副作用なしで隔離し test-first。　　
+コアロジックは `src/lib/` に副作用なしで隔離し test-first。  
 Canvas / DOM / navigator への依存は `src/app.ts`（配線）と `src/env.ts`（環境検出）に閉じています。
 
 ```
@@ -72,7 +94,7 @@ assets/            frost_layer.webp（固定霜レイヤー）・sample.svg
 public/icons/      PWA アイコン
 ```
 
-合成の仕組み（4 枚の Canvas）。　　
+合成の仕組み（4 枚の Canvas）。  
 `表示(cv) = base 全面描画 + ( eff ∩ mask )`:
 
 ```mermaid
