@@ -29,6 +29,10 @@ export default defineConfig({
         globPatterns: ['**/*.{html,css,js,webp,png,svg,ico,woff2}'],
         // 念のため: 実行時に外部へ取りに行かない（完全オフライン・端末内完結）
         navigateFallback: 'index.html',
+        // precache 照合時にクエリを無視する。これがないと SW 有効時に ?sample 付きの
+        // /app?sample=1 が precache(app.html) に当たらず navigateFallback(index.html=LP)
+        // へ落ち、サンプル読込が効かなくなる。ページ内容はクエリで変わらないので全無視で良い。
+        ignoreURLParametersMatching: [/.*/],
       },
       includeAssets: ['icons/icon-192.png', 'icons/icon-512.png', 'icons/icon-maskable.png'],
       manifest: {
