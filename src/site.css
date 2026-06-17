@@ -76,6 +76,8 @@ a:hover {
   font-weight: 600;
   font-size: 16px;
   color: var(--text);
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 .brand:hover {
   text-decoration: none;
@@ -96,6 +98,16 @@ a:hover {
 }
 .site-nav a {
   color: var(--muted);
+  white-space: nowrap;
+}
+/* 狭幅では装飾サブタイトルを隠し、ヘッダーの折り返し崩れを防ぐ */
+@media (max-width: 480px) {
+  .brand span {
+    display: none;
+  }
+  .site-nav {
+    gap: 14px;
+  }
 }
 .site-nav a:hover {
   color: var(--text);
