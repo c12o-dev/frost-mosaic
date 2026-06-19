@@ -500,7 +500,7 @@ function downloadBlob(blob: Blob, filename: string): void {
 }
 function openInNewTab(blob: Blob): void {
   const url = URL.createObjectURL(blob)
-  window.open(url, '_blank')
+  window.open(url, '_blank', 'noopener,noreferrer')
   el.status.textContent = '保存できなければ画像を長押し'
   setTimeout(() => URL.revokeObjectURL(url), 60000)
 }
